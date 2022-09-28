@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "182371720803",
+    "project_id": "family-database-afe94",
+    "storage_bucket": "family-database-afe94.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:182371720803:android:b82ef7682b090d52fba256",
+        "android_client_info": {
+          "package_name": "com.example.family_database_management"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "182371720803-vpe9c1hos63e9h8usi84shvofnovhsv7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDRz9hd26EKx6D4LfB1kYsyXCt6C4cnjfM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "182371720803-vpe9c1hos63e9h8usi84shvofnovhsv7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
