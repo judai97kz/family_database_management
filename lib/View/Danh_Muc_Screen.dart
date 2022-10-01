@@ -1,44 +1,27 @@
+import 'package:family_database_management/View/item_sp.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'San_pham.dart';
+import '../models/san_pham.dart';
 
-final List<String> san_pham = [];
-List<String> check_sp = [];
+
+var sp1 = [];
 
 class DM_SP extends StatefulWidget {
   var name="";
   DM_SP({Key? key,required this.name}) : super(key: key);
-  
   @override
   State<DM_SP> createState() => _DM_SPState();
 }
 
 class _DM_SPState extends State<DM_SP> {
- 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    san_pham.clear();
-    DatabaseReference ref = FirebaseDatabase.instance.ref("Database/DanhMuc/${widget.name}");
-    ref.onChildAdded.listen((event) {
-      setState(() {
-        print("fkjhskghkj ${widget.name}");
-        san_pham.add(event.snapshot.key.toString());
-        print(event.snapshot.key.toString());
-        check_sp = san_pham.toSet().toList();
-
-      });
-    });
-  }
-
-  TextEditingController? new_cate = TextEditingController();
+  int data1=1,data2=1;
+  int check_index=1;
+  int check_i=1;
   final ten_sp= TextEditingController();
   final gia_sp = TextEditingController();
   final soluong_sp = TextEditingController();
-  String? _new_sp;
   String? _name,_price,_amout;
+
   Widget Custom_Text(TextEditingController? controller,String Label ){
     return TextField(
       controller: controller,
@@ -71,11 +54,24 @@ class _DM_SPState extends State<DM_SP> {
                           Custom_Text(gia_sp, "price"),
                           Custom_Text(soluong_sp, "amout"),
                           ElevatedButton(onPressed: (){
-                           setState(() {
-                             FirebaseDatabase.instance.ref("Database/DanhMuc/${widget.name}/$_name/price").set(_price);
-                             FirebaseDatabase.instance.ref("Database/DanhMuc/${widget.name}/$_name/amout").set(_amout);
-                             Navigator.of(context).pop();
-                           });
+                            setState(() {
+                              FirebaseDatabase.instance.ref("Database/DanhMuc/${widget.name}").onChildAdded.listen((event) {
+                                String the_key = event.snapshot.key.toString().trim();
+                                if(_name!.trim()==the_key){
+                                  check_i=1;
+                                }
+                                else{
+                                  check_i++;
+                                }
+                                if(check_i==1){
+                                  print("Trùng");
+                                }else{
+                                  FirebaseDatabase.instance.ref("Database/DanhMuc/${widget.name}/$_name/price").set(_price);
+                                  FirebaseDatabase.instance.ref("Database/DanhMuc/${widget.name}/$_name/amout").set(_amout);
+                                }
+                              });
+                            });
+                            Navigator.pop(context, 'Thêm');
                           }, child: Text("Thêm"))
                         ],
                       )
@@ -85,47 +81,35 @@ class _DM_SPState extends State<DM_SP> {
           ],
         ),
         body: SingleChildScrollView(
-          child: Center(
-            child: Column(
-              children: [
-                Container(
-
-                  child: GridView.builder(
+            child: Container(
+              padding: EdgeInsets.only(left: 5.0,right: 5.0,top: 5.0,bottom: 5.0),
+              child: Column(
+                children: [
+                  Container(
+                    width: double.maxFinite,
+                    child: GridView(
+                      children: [
+                        for(int i=0;i<sp1.length;i++) if(sp1[i].name!=" ") CategoriesItem(namedm: widget.name, category: sp1[i],),
+                      ],
                       shrinkWrap: true,
-                      itemCount: check_sp.length,
                       gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                           maxCrossAxisExtent: 300,
-                          childAspectRatio: 4/3,
-                          crossAxisSpacing: 10,
-                          mainAxisSpacing: 10),
-                      itemBuilder: (context,index){
-                        return Container(
-                            child: Card(
-                              color: Colors.yellow,
-                              child: ListTile(
-                                title: San_pham(namedm: widget.name, namesp: check_sp[index]),
-                                onTap: (){
-                                  print("Danh muc ${check_sp[index]}");
-                                },
-                                onLongPress: (){
-                                  setState(() {
-                                    FirebaseDatabase.instance.ref("Database/DanhMuc/${widget.name}/${check_sp[index]}").remove();
-                                    check_sp.remove(check_sp[index]);
-                                    if(check_sp.length==0){
-                                      FirebaseDatabase.instance.ref("Database/DanhMuc/${widget.name}").set(1);
-                                    }
-                                  });
-                                },
-                              ),
-                            )
-                        );
-                      }
-                  ),
-                )
-              ],
+                          childAspectRatio: 3/2,
+                          crossAxisSpacing: 5,
+                          mainAxisSpacing: 0.1),
+                    ),
+                  )
+                ],
+              ),
             ),
-          ),
-        )
+        ),
+      floatingActionButton: FloatingActionButton(
+        onPressed:(){
+          setState(() {
+
+            sp1.sort((a,b)=> a.name.compareTo(b.name));
+          });
+        },),
     );
 
   }

@@ -2,12 +2,16 @@ import 'dart:ffi';
 import 'dart:math';
 
 import 'package:family_database_management/View/Danh_Muc_Screen.dart';
+import 'package:family_database_management/models/san_pham.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'Danh_Muc_Screen.dart' as dm;
 
 final List<String> danh_muc = [];
 List<String> check = [];
+final a = [];
+
 class Danh_Muc_Screen extends StatefulWidget {
   const Danh_Muc_Screen({Key? key}) : super(key: key);
 
@@ -31,6 +35,25 @@ class _Danh_Muc_ScreenState extends State<Danh_Muc_Screen> {
      });
     });
   }
+
+  void get_data(int index){
+    DatabaseReference ref = FirebaseDatabase.instance.ref("Database/DanhMuc/${check[index]}");
+    ref.onChildAdded.listen((event) {
+      String key = event.snapshot.key.toString();
+      setState(() {
+        ref.child(key).child("price").onValue.listen((dt1) {
+          int data1 = int.parse(dt1.snapshot.value.toString());
+          print("data1 : $data1");
+          ref.child(key).child("amout").onValue.listen((dt2) {
+            int data2 = int.parse(dt2.snapshot.value.toString());
+            print("data2 : $data2");
+            dm.sp1.add(new sanpham(name: key, price: data1, amout: data2));
+          });
+        });
+      });
+    });
+  }
+
   TextEditingController? new_cate = TextEditingController();
   String? _new_cate;
   @override
@@ -54,7 +77,8 @@ class _Danh_Muc_ScreenState extends State<Danh_Muc_Screen> {
                             },
                           ),
                           ElevatedButton(onPressed: (){
-                            FirebaseDatabase.instance.ref("Database/DanhMuc/$_new_cate").set(1);
+                            FirebaseDatabase.instance.ref("Database/DanhMuc/$_new_cate").child(" /price").set(1);
+                            FirebaseDatabase.instance.ref("Database/DanhMuc/$_new_cate").child(" /amout").set(1);
                             Navigator.of(context).pop();
                           }, child: Text("Thêm"))
                         ],
@@ -90,12 +114,20 @@ class _Danh_Muc_ScreenState extends State<Danh_Muc_Screen> {
                             title: Center(child: Text(check[index]),),
                             onTap: (){
                               print(check[index]);
+                              dm.sp1.clear();
+                              setState(() {
+                                get_data(index);
+                              });
+
                               Navigator.push(context, MaterialPageRoute(builder: (context)=>DM_SP(name: check[index])));
                             },
                             onLongPress: (){
                               setState(() {
-                                FirebaseDatabase.instance.ref("Database/DanhMuc/${check[index]}").remove();
-                                check.remove(check[index]);
+                                String key_value=check[index];
+                                FirebaseDatabase.instance.ref("Database/DanhMuc/$key_value").remove();
+                                check.remove(key_value);
+                                danh_muc.remove(key_value);
+                                dm.sp1.clear();
                               });
                             },
                           ),

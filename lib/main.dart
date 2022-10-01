@@ -49,6 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: Text("Quản lý hàng hóa"),backgroundColor: Colors.white),
       body: Column(
         children: [
           Custom_TextField(usercontrol!,"user"),
